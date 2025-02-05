@@ -1,0 +1,55 @@
+- host: localhost
+  connection: local
+  vars_files:
+   - main.yml
+   - test.hml
+
+  tasks:
+   - name: execution credential instances info
+     amazon.aws.ec2_instance_info:
+      access_key: "{{access_key}}"
+      secret_key: "{{secret_key}}"
+      region: "{{region}}"
+      filters:
+       instance-state-name:
+        - running
+        - pending
+        - shutting-down
+        - stopping
+        - stopped
+     register: ins1
+
+   - debug:
+      var: ins1["instances"]
+      verbosity: 1
+
+   - name: execution assumed_role
+     amazon.aws.sts_assume_role:
+      access_key: "{{access_key}}"
+      secret_key: "{{secret_key}}"
+      role_arn: "{{role_arn}}"
+      role_session_name: "testSwitchRoleSession"
+     register: assumed_role
+
+   - debug:
+      var: assumed_role
+      verbosity: 1
+
+   - name: execution switchrole instances info
+     amazon.aws.ec2_instance_info:
+      access_key: "{{assumed_role.access_key}}"
+      secret_key: "{{assumed_role.secret_key}}"
+      session_token: "{{assumed_role.sts_creds.session_token}}"
+      region: "{{region}}"
+      filters:
+       instance-state-name:
+        - running
+        - pending
+        - shutting-down
+        - stopping
+        - stopped
+     register: ins2
+
+   - debug:
+      var: ins2["instances"]
+      verbosity: 1
