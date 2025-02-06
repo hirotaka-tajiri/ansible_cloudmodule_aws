@@ -1,0 +1,4 @@
+---
+# vars file for ansible_cloudmodule_aws
+role_arn:
+region: "ap-northeast-1"

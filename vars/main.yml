@@ -1,0 +1,4 @@
+---
+# vars file for ansible_cloudmodule_aws
+access_key:
+secret_key:
